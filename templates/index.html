@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Chatbot</title>
+
+    <!-- CSS File -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+
+            <div class="sidebar-header">
+                <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+                <div class="logo">🤖 AI Chatbot</div>
+            </div>
+
+            <button id="newChatBtn" class="new-chat-btn">
+                + New Chat
+            </button>
+
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="🔍 Search chats..."
+                    class="search-bar">
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="pinned-section" id="pinnedSection" style="display:none;">
+                <div class="section-title">📌 Pinned</div>
+                <ul id="pinnedList" class="pinned-list">
+                    <!-- Pinned conversations -->
+                </ul>
+                <div class="divider"></div>
+            </div>
+
+            <div class="history">
+                <ul id="conversationList">
+                    <!-- Conversation history will appear here -->
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="settings-btn" id="settingsBtn" title="Settings">⚙️</button>
+            </div>
+
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h3>⚙️ Settings</h3>
+                <button class="close-settings" id="closeSettings">✕</button>
+            </div>
+
+            <div class="settings-content">
+                
+                <div class="settings-group">
+                    <label class="setting-label">🌙 Theme</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="dark" checked>
+                            Dark
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="light">
+                            Light
+                        </label>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="settings-group">
+                    <label class="setting-label">⌨️ Enter to Send</label>
+                    <div class="toggle-label">
+                        <input type="checkbox" id="enterToSend" checked>
+                        <span id="enterToSendStatus">Enabled</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="settings-group">
+                    <label class="setting-label">⬇️ Auto Scroll</label>
+                    <div class="toggle-label">
+                        <input type="checkbox" id="autoScroll" checked>
+                        <span>Scroll to latest message</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="settings-group">
+                    <label class="setting-label">⌛ Typing Indicator</label>
+                    <div class="toggle-label">
+                        <input type="checkbox" id="typingIndicator" checked>
+                        <span>Show AI typing animation</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="settings-group">
+                    <button class="danger-btn" id="clearAllBtn">🗑️ Clear All Chats</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="settings-group">
+                    <label class="setting-label">ℹ️ About</label>
+                    <div class="about-text">
+                        <p><strong>AI Chatbot</strong></p>
+                        <p>Version 2.0</p>
+                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">
+                            Powered by Groq API
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-container">
+
+            <div class="chat-header">
+                <h2>AI Chatbot</h2>
+            </div>
+
+            <div class="chat-box" id="chatBox">
+                <!-- Messages will appear here -->
+            </div>
+
+            <div class="typing" id="typing" style="display:none;">
+                🤖 AI is typing...
+            </div>
+
+            <div class="input-area">
+
+                <div class="file-preview" id="filePreview" style="display:none;">
+                    <div class="preview-content">
+                        <span class="file-icon" id="fileIcon">📎</span>
+                        <span class="file-name" id="fileName"></span>
+                        <button class="remove-file-btn" id="removeFileBtn" title="Remove file">✖</button>
+                    </div>
+                </div>
+
+                <div class="input-controls">
+                    <button id="attachmentBtn" class="attachment-btn" title="Attach file">📎</button>
+                    <input 
+                        type="file" 
+                        id="fileInput" 
+                        style="display:none;"
+                        accept=".pdf,.docx,.txt,.csv,.xlsx,.jpg,.jpeg,.png">
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Type your message...">
+                    <button id="sendBtn" class="send-btn">
+                        Send
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>Delete Conversation?</h3>
+            <p>This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" id="cancelDelete">Cancel</button>
+                <button class="btn-delete" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All Confirmation Modal -->
+    <div class="modal" id="clearAllModal">
+        <div class="modal-content">
+            <h3>Clear All Conversations?</h3>
+            <p>All chats will be permanently deleted.</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" id="cancelClearAll">Cancel</button>
+                <button class="btn-delete" id="confirmClearAll">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript File -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>
